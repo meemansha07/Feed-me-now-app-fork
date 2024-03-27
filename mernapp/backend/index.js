@@ -1,29 +1,32 @@
 const express = require('express');
-//const cors = require('cors');
+const cors = require('cors');
 const mongoose = require('mongoose');
-const mongoDB = require("./db")
+const mongoDB = require("./db");
+const hbs = require("hbs");
+
 const app = express();
 const port = 5000;
 
+// Connect to MongoDB
 mongoDB();
-/*
-mongoose.connect('mongodb+srv://feedMeNow:mern1234@cluster0.p72zczp.mongodb.net/feedMeNow',{
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => {
-  console.log('DB connected');
-}).catch((error) => {
-  console.log("Error connecting to database", error);
-});*/
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+// Middleware
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
+app.use(express.json());
+
+// Routes
+app.use('/api', require('./Routes/CreatUser')); // Assuming this handles user creation
+app.use('/api', require('./Routes/DisplayData'));
+
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
 
-app.use(express.json());
-app.use('/api', require('./Routes/CreatUser')); // To see User History 
-
+// Start the server
 app.listen(port, () => {
-  console.log('Example app listening on port ${port}');
+  console.log(`Server is running on port ${port}`);
 });
